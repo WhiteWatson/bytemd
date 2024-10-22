@@ -38,11 +38,18 @@
   export let uploadImages: Props['uploadImages'] = undefined
   export let overridePreview: Props['overridePreview'] = undefined
   export let maxLength: NonNullable<Props['maxLength']> = Infinity
+  export let statusEl: Props['statusEl'] = undefined
+  export let hiddenIconKeys: Props['hiddenIconKeys'] = undefined
 
   $: mergedLocale = { ...en, ...locale }
   const dispatch = createEventDispatcher<{ change: { value: string } }>()
 
-  $: actions = getBuiltinActions(mergedLocale, plugins, uploadImages)
+  $: actions = getBuiltinActions(
+    mergedLocale,
+    plugins,
+    uploadImages,
+    hiddenIconKeys,
+  )
   $: split = mode === 'split' || (mode === 'auto' && containerWidth >= 800)
   $: ((_) => {
     // reset active tab
@@ -192,10 +199,10 @@
       if (!(body instanceof HTMLElement)) return
 
       const leftNodes = hast.children.filter(
-        (v): v is Element => v.type === 'element'
+        (v): v is Element => v.type === 'element',
       )
       const rightNodes = [...body.childNodes].filter(
-        (v): v is HTMLElement => v instanceof HTMLElement
+        (v): v is HTMLElement => v instanceof HTMLElement,
       )
 
       for (let i = 0; i < leftNodes.length; i++) {
@@ -252,7 +259,7 @@
 
       previewEl.scrollTo(
         0,
-        rightRatio * (previewEl.scrollHeight - previewEl.clientHeight)
+        rightRatio * (previewEl.scrollHeight - previewEl.clientHeight),
       )
       editCalled = true
     }
@@ -263,7 +270,7 @@
       updateBlockPositions()
       currentBlockIndex = findStartIndex(
         previewEl.scrollTop / (previewEl.scrollHeight - previewEl.offsetHeight),
-        previewPs
+        previewPs,
       )
 
       if (!syncEnabled) return
@@ -301,7 +308,7 @@
     // handle image drop and paste
     const handleImages = async (
       e: Event,
-      itemList: DataTransferItemList | undefined
+      itemList: DataTransferItemList | undefined,
     ) => {
       if (!uploadImages) return
 
@@ -443,6 +450,7 @@
     locale={mergedLocale}
     showSync={!overridePreview && split}
     value={debouncedValue}
+    {statusEl}
     {syncEnabled}
     islimited={value.length > maxLength}
     on:sync={(e) => {

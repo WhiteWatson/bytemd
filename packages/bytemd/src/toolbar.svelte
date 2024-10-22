@@ -29,6 +29,15 @@
   $: writeActive = activeTab === 'write'
   $: previewActive = activeTab === 'preview'
 
+  $: actions = actions.map((action) => ({
+    ...action,
+    visible: action.visible !== false,
+  }))
+  $: rightAfferentActions = rightAfferentActions.map((action) => ({
+    ...action,
+    visible: action.visible !== false,
+  }))
+
   $: rightActions = [
     {
       title: tocActive ? locale.closeToc : locale.toc,
@@ -39,6 +48,7 @@
           dispatch('click', 'toc')
         },
       },
+      visible: false,
       active: tocActive,
     },
     {
@@ -95,6 +105,7 @@
           window.open('https://github.com/bytedance/bytemd')
         },
       },
+      visible: false,
     },
     ...rightAfferentActions,
   ] as RightAction[]
@@ -249,7 +260,7 @@
   <div class="bytemd-toolbar-left">
     {#if split}
       {#each actions as item, index}
-        {#if item.handler}
+        {#if item.handler && item.hidden}
           <div
             class={['bytemd-toolbar-icon', tippyClass].join(' ')}
             bytemd-tippy-path={index}

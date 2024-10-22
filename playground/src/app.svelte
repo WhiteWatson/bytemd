@@ -16,30 +16,33 @@
   import 'katex/dist/katex.css'
 
   function stripPrefixes(obj: Record<string, any>) {
-    return Object.entries(obj).reduce((p, [key, value]) => {
-      p[key.split('/').slice(-1)[0].replace('.json', '')] = value
-      // console.log(p)
-      return p
-    }, {} as Record<string, any>)
+    return Object.entries(obj).reduce(
+      (p, [key, value]) => {
+        p[key.split('/').slice(-1)[0].replace('.json', '')] = value
+        // console.log(p)
+        return p
+      },
+      {} as Record<string, any>,
+    )
   }
 
   const locales = stripPrefixes(
-    import.meta.glob('/node_modules/bytemd/locales/*.json', { eager: true })
+    import.meta.glob('/node_modules/bytemd/locales/*.json', { eager: true }),
   )
   const gfmLocales = stripPrefixes(
     import.meta.glob('/node_modules/@bytemd/plugin-gfm/locales/*.json', {
       eager: true,
-    })
+    }),
   )
   const mathLocales = stripPrefixes(
     import.meta.glob('/node_modules/@bytemd/plugin-math/locales/*.json', {
       eager: true,
-    })
+    }),
   )
   const mermaidLocales = stripPrefixes(
     import.meta.glob('/node_modules/@bytemd/plugin-mermaid/locales/*.json', {
       eager: true,
-    })
+    }),
   )
 
   let value = markdownText
@@ -57,6 +60,11 @@
     'medium-zoom': true,
     mermaid: true,
   }
+
+  let Status = `
+      <span>Markdown: ${value.length}</span>
+      <span>HTML: 123122</span>
+  `
 
   $: plugins = [
     enabled.breaks && breaks(),
@@ -110,16 +118,8 @@
     {maxLength}
     placeholder={'Start writing with ByteMD'}
     locale={locales[localeKey]}
-    uploadImages={(files) => {
-      return Promise.all(
-        files.map((file) => {
-          // TODO:
-          return {
-            url: 'https://picsum.photos/300',
-          }
-        })
-      )
-    }}
+    statusEl={Status}
+    hiddenIconKeys={['bold']}
     on:change={(e) => {
       value = e.detail.value
     }}

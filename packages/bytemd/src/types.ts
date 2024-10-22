@@ -86,32 +86,36 @@ type Listener = (context: BytemdEditorContext) => void
 
 type BytemdActionHandler =
   | {
-      type: 'action'
-      click: Listener
-      /**
-       * Keyboard shortcut
-       *
-       * If specified, this shortcut will bind to click listener
-       * and will be added to the Keyboard shortcut section
-       *
-       * https://codemirror.net/doc/manual.html#keymaps
-       */
-      shortcut?: string
-      /**
-       * mouseenter event listener, only takes effect in dropdown items
-       */
-      mouseenter?: Listener
-      /**
-       * mouseleave event listener, only takes effect in dropdown items
-       */
-      mouseleave?: Listener
-    }
+    type: 'action'
+    click: Listener
+    /**
+     * Keyboard shortcut
+     *
+     * If specified, this shortcut will bind to click listener
+     * and will be added to the Keyboard shortcut section
+     *
+     * https://codemirror.net/doc/manual.html#keymaps
+     */
+    shortcut?: string
+    /**
+     * mouseenter event listener, only takes effect in dropdown items
+     */
+    mouseenter?: Listener
+    /**
+     * mouseleave event listener, only takes effect in dropdown items
+     */
+    mouseleave?: Listener
+  }
   | {
-      type: 'dropdown'
-      actions: BytemdAction[]
-    }
+    type: 'dropdown'
+    actions: BytemdAction[]
+  }
 
 export interface BytemdAction {
+  /**
+   * Action key
+   */
+  key?: hiddenIcon
   /**
    * Action title
    */
@@ -136,6 +140,10 @@ export interface BytemdAction {
    * Action handler
    */
   handler?: BytemdActionHandler
+  /**
+   * 控制是否显示
+   */
+  hidden?: boolean;
 }
 
 export interface BytemdPlugin {
@@ -164,7 +172,7 @@ export interface BytemdPlugin {
    */
   viewerEffect?(ctx: BytemdViewerContext): void | (() => void)
 }
-
+export type hiddenIcon = 'h' | 'bold' | 'italic' | 'quote' | 'link' | 'image' | 'code' | 'codeBlock' | 'ul' | 'ol' | 'hr';
 export interface EditorProps extends ViewerProps {
   /**
    * Editor display mode
@@ -213,7 +221,16 @@ export interface EditorProps extends ViewerProps {
   /**
    * Maximum length (number of characters) of value
    */
-  maxLength?: number
+  maxLength?: number;
+  /**
+   * status dom拓展节点
+   */
+  statusEl?: HTMLElement;
+  /**
+   * 需要隐藏的icon的key
+   * 'h' | 'bold' | 'italic' | 'quote' | 'link' | 'image' | 'code' | 'codeBlock' | 'ul' | 'ol' | 'hr'
+   */
+  hiddenIconKeys?: hiddenIcon[];
 }
 
 export interface ViewerProps {

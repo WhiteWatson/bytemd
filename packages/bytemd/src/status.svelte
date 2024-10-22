@@ -3,12 +3,14 @@
   import { createEventDispatcher } from 'svelte'
   // @ts-ignore
   import wordCount from 'word-count'
+  import type { EditorProps as Props } from './types'
 
   export let showSync: boolean
   export let value: string
   export let syncEnabled: boolean
   export let locale: BytemdLocale
   export let islimited: boolean
+  export let statusEl: Props['statusEl'] = undefined
 
   const dispatch = createEventDispatcher()
 
@@ -24,6 +26,9 @@
     <span>
       {locale.lines}: <strong>{lines}</strong>
     </span>
+    {#if statusEl}
+      {@html statusEl}
+    {/if}
     {#if islimited}
       <span class="bytemd-status-error">{locale.limited}</span>
     {/if}

@@ -5,6 +5,7 @@ import type {
   EditorProps,
   BytemdLocale,
   BytemdEditorContext,
+  hiddenIcon,
 } from './types'
 import type { Editor, Position } from 'codemirror'
 import type CodeMirror from 'codemirror'
@@ -165,11 +166,14 @@ export async function handleImageUpload(
 export function getBuiltinActions(
   locale: BytemdLocale,
   plugins: BytemdPlugin[],
-  uploadImages: EditorProps['uploadImages']
+  uploadImages: EditorProps['uploadImages'],
+  hiddenIconKeys?: string[]
 ): { leftActions: BytemdAction[]; rightActions: BytemdAction[] } {
   const leftActions: BytemdAction[] = [
     {
       icon: icons.H,
+      key: 'h',
+      hidden: !hiddenIconKeys?.includes('h'),
       handler: {
         type: 'dropdown',
         actions: [1, 2, 3, 4, 5, 6].map((level) => ({
@@ -202,8 +206,10 @@ export function getBuiltinActions(
     },
     {
       title: locale.bold,
+      key: 'bold',
       icon: icons.TextBold,
       cheatsheet: `**${locale.boldText}**`,
+      hidden: !hiddenIconKeys?.includes('bold'),
       handler: {
         type: 'action',
         shortcut: getShortcutWithPrefix('B'),
@@ -215,8 +221,10 @@ export function getBuiltinActions(
     },
     {
       title: locale.italic,
+      key: 'italic',
       icon: icons.TextItalic,
       cheatsheet: `*${locale.italicText}*`,
+      hidden: !hiddenIconKeys?.includes('italic'),
       handler: {
         type: 'action',
         shortcut: getShortcutWithPrefix('I'),
@@ -228,8 +236,10 @@ export function getBuiltinActions(
     },
     {
       title: locale.quote,
+      key: 'quote',
       icon: icons.Quote,
       cheatsheet: `> ${locale.quotedText}`,
+      hidden: !hiddenIconKeys?.includes('quote'),
       handler: {
         type: 'action',
         click({ replaceLines, editor }) {
@@ -240,8 +250,10 @@ export function getBuiltinActions(
     },
     {
       title: locale.link,
+      key: 'link',
       icon: icons.LinkOne,
       cheatsheet: `[${locale.linkText}](url)`,
+      hidden: !hiddenIconKeys?.includes('link'),
       handler: {
         type: 'action',
         shortcut: getShortcutWithPrefix('K'),
@@ -258,29 +270,33 @@ export function getBuiltinActions(
     },
     {
       title: locale.image,
+      key: 'image',
       icon: icons.Pic,
       cheatsheet: `![${locale.imageAlt}](url "${locale.imageTitle}")`,
+      hidden: !!uploadImages || !hiddenIconKeys?.includes('link'),
       handler: uploadImages
         ? {
-            type: 'action',
-            shortcut: getShortcutWithPrefix('I', true),
-            async click(ctx) {
-              const fileList = await selectFiles({
-                accept: 'image/*',
-                multiple: true,
-              })
+          type: 'action',
+          shortcut: getShortcutWithPrefix('I', true),
+          async click(ctx) {
+            const fileList = await selectFiles({
+              accept: 'image/*',
+              multiple: true,
+            })
 
-              if (fileList?.length) {
-                await handleImageUpload(ctx, uploadImages, Array.from(fileList))
-              }
-            },
-          }
+            if (fileList?.length) {
+              await handleImageUpload(ctx, uploadImages, Array.from(fileList))
+            }
+          },
+        }
         : undefined,
     },
     {
       title: locale.code,
+      key: 'code',
       icon: icons.Code,
       cheatsheet: '`' + locale.codeText + '`',
+      hidden: !hiddenIconKeys?.includes('code'),
       handler: {
         type: 'action',
         shortcut: getShortcutWithPrefix('K', true),
@@ -292,6 +308,7 @@ export function getBuiltinActions(
     },
     {
       title: locale.codeBlock,
+      key: 'codeBlock',
       icon: icons.CodeBrackets,
       cheatsheet: '```' + locale.codeLang + '↵',
       handler: {
@@ -309,8 +326,10 @@ export function getBuiltinActions(
     },
     {
       title: locale.ul,
+      key: 'ul',
       icon: icons.ListTwo,
       cheatsheet: `- ${locale.ulItem}`,
+      hidden: !hiddenIconKeys?.includes('ul'),
       handler: {
         type: 'action',
         shortcut: getShortcutWithPrefix('U', true),
@@ -322,8 +341,10 @@ export function getBuiltinActions(
     },
     {
       title: locale.ol,
+      key: 'ol',
       icon: icons.OrderedList,
       cheatsheet: `1. ${locale.olItem}`,
+      hidden: !hiddenIconKeys?.includes('ol'),
       handler: {
         type: 'action',
         shortcut: getShortcutWithPrefix('O', true),
@@ -335,10 +356,13 @@ export function getBuiltinActions(
     },
     {
       title: locale.hr,
+      key: 'hr',
       icon: icons.DividingLine,
       cheatsheet: '---',
+      hidden: !hiddenIconKeys?.includes('hr'),
     },
   ]
+
   const rightActions: BytemdAction[] = []
   plugins.forEach(({ actions }) => {
     if (actions) {
